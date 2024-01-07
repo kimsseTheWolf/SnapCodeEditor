@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const homedirHandler = require('./homedirHandler');
 const moment = require('moment');
+const themes = require("./styles/stylesManager.js");
 let mainWindow;
 
 // Tray creation
@@ -99,6 +100,11 @@ app.on('ready', () => {
                 }
             });
         }
+    });
+
+    // styles handler
+    ipcMain.on('get-styles', (event) => {
+        event.reply("got-style", themes)
     });
 
 });
