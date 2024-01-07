@@ -383,16 +383,16 @@ require(['vs/editor/editor.main'], function() {
         monaco.editor.setModelLanguage(editor.getModel(), this.value);
     });
 
-    window.ipcRenderer.on('file-opened', (event, filePath, content) => {
+    window.ipcRenderer.on('file-opened', (event, filePath, content, fileName) => {
         currentFilePath = filePath;
         editor.setValue(content);
-        document.getElementById("pathDisplay").innerText = currentFilePath;
+        document.getElementById("pathDisplay").innerText = fileName;
     });
 
-    window.ipcRenderer.on('file-saved', (event, filePath) => {
+    window.ipcRenderer.on('file-saved', (event, filePath, fileName) => {
         console.log("file-saved");
         currentFilePath = filePath;
-        document.getElementById("pathDisplay").innerText = currentFilePath;
+        document.getElementById("pathDisplay").innerText = fileName;
 
         // The file has been saved
         isSaved = true;
@@ -401,9 +401,9 @@ require(['vs/editor/editor.main'], function() {
         document.getElementById('saveStatus').textContent = 'Saved';
     });
 
-    window.ipcRenderer.on('file-renamed', (event, filePath) => {
+    window.ipcRenderer.on('file-renamed', (event, filePath, fileName) => {
         currentFilePath = filePath;
-        document.getElementById("pathDisplay").innerText = currentFilePath;
+        document.getElementById("pathDisplay").innerText = fileName;
     });
 });
 

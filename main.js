@@ -70,18 +70,24 @@ app.on('ready', () => {
     ipcMain.on('open-file', async () => {
         const { filePaths } = await dialog.showOpenDialog(mainWindow, { properties: ['openFile'] });
         const content = fs.readFileSync(filePaths[0], 'utf-8');
-        mainWindow.webContents.send('file-opened', filePaths[0], content);
+        // get the file name
+        const fileName = path.basename(filePaths[0]);
+        mainWindow.webContents.send('file-opened', filePaths[0], content, fileName);
     });
 
     ipcMain.on('save-file', async (event, filePath, content) => {
         if (!filePath) {
             const { filePath } = await dialog.showSaveDialog(mainWindow, {});
             fs.writeFileSync(filePath, content);
-            mainWindow.webContents.send('file-saved', filePath);
+            // get the file name
+            const fileName = path.basename(filePath);
+            mainWindow.webContents.send('file-saved', filePath, fileName);
         } 
         else {
             fs.writeFileSync(filePath, content);
-            mainWindow.webContents.send('file-saved', filePath);
+            // get the file name
+            const fileName = path.basename(filePath);
+            mainWindow.webContents.send('file-saved', filePath, fileName);
         }
     });
 
@@ -96,7 +102,9 @@ app.on('ready', () => {
                     console.error('Error renaming file:', err);
                 } else {
                     // Send a message back to the renderer process with the new file path
-                    event.reply('file-renamed', newFilePath);
+                    // get the new filename first
+                    const fileName = path.basename(newFilePath);
+                    event.reply('file-renamed', newFilePath, fileName);
                 }
             });
         }
