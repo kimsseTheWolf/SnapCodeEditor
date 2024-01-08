@@ -2,6 +2,7 @@
 const { app, BrowserWindow, ipcMain, dialog, globalShortcut, Tray, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const {exec} = require('child_process');
 const homedirHandler = require('./homedirHandler');
 const moment = require('moment');
 const themes = require("./styles/stylesManager.js");
@@ -114,6 +115,16 @@ app.on('ready', () => {
     ipcMain.on('get-styles', (event) => {
         event.reply("got-style", themes)
     });
+
+    // open with code
+    ipcMain.on("open-with-code", (event, filePath) => {
+        console.log(filePath);
+        exec(`code "${filePath}"`, (err, stdout, stderr) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    })
 
 });
 

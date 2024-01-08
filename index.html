@@ -8,7 +8,7 @@
 <body>
     <div class="menu">
         <div class="menu-group">
-            <div id="pathDisplay"></div>
+            <div id="pathDisplay" style="margin-left: 5px;"></div>
             <div id="saveStatus">Unsaved changes</div>
         </div>
         <div class="menu-group">
@@ -28,20 +28,32 @@
                 <img src="assets/rename-file.svg" width="16px" height="16px" style="margin-right: 5px;"/>
                 <div class="button-hover-content">Rename File</div>
             </div>
+            <div class="button" id="openWithCode">
+                <img src="assets/vscode.svg" width="16px" height="16px" style="margin-right: 5px;" />
+            </div>
         </div>
     </div>
     <div id="container"></div>
-    <div class="menu">
-        <select id="language">
-            <option value="javascript">JavaScript</option>
-            <option value="html">HTML</option>
-            <option value="css">CSS</option>
-            <option value="python">Python</option>
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-            <option value="json">JSON</option>
-            <option value="txt">Plain text</option>
-        </select>
+    <div class="menu" id="footerMenu">
+        <div class="menu-group">
+            <select id="language">
+                <option value="javascript">JavaScript</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+                <option value="java">Java</option>
+                <option value="json">JSON</option>
+                <option value="txt">Plain text</option>
+            </select>
+            <div class="button" id="increaseFontSizeButton">
+                <img src="assets/add-bold.svg" width="16px" height="16px"/>
+            </div>
+            <div class="button" id="textSize">-</div>
+            <div class="button" id="decreaseFontSizeButton">
+                <img src="assets/minus-bold.svg" width="16px" height="16px"/>
+            </div>
+        </div>
         <div id="cursorPosition" style="font-size: small;">Row: 0, Column: 0</div>
     </div>
     <script src="renderer.js"></script>
@@ -63,6 +75,11 @@
         display: flex;
         flex-direction: column;
         user-select: none;
+    }
+    #footerMenu {
+        background-color: rgba(0,0,0,0);
+        margin: 0px;
+        padding: 5px;
     }
     #container {
         flex: auto;
@@ -109,12 +126,12 @@
     .button:hover {
         background-color: rgba(255, 255, 255, 0.2);
     }
-    .button-hover-content {
+    /* .button-hover-content {
         display: none;
     }
     .button:hover .button-hover-content {
         display: block;
-    }
+    } */
 
     select {
         font-family: var(--default-font-family);

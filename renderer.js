@@ -3,6 +3,7 @@ let editor;
 let currentFilePath;
 let client;
 let isSaved = false;
+let currentTextSize = 16;
 
 const defaultTheme = {
     base: "vs-dark",
@@ -360,6 +361,7 @@ require(['vs/editor/editor.main'], function() {
         value: '',
         language: 'javascript',
         theme: 'currentTheme',
+        fontSize: currentTextSize,
     });
 
     editor.onDidChangeCursorPosition(function (e) {
@@ -405,6 +407,8 @@ require(['vs/editor/editor.main'], function() {
         currentFilePath = filePath;
         document.getElementById("pathDisplay").innerText = fileName;
     });
+
+    document.getElementById('textSize').textContent = currentTextSize;
 });
 
 function openFile() {
@@ -448,12 +452,35 @@ async function handleRenameFile() {
     console.log(filePath);
 }
 
+function increaseTextSize() {
+    currentTextSize += 1;
+    editor.updateOptions({
+        fontSize: currentTextSize
+    });
+    document.getElementById('textSize').textContent = currentTextSize;
+}
+
+function decreaseTextSize() {
+    currentTextSize -= 1;
+    editor.updateOptions({
+        fontSize: currentTextSize
+    });
+    document.getElementById('textSize').textContent = currentTextSize;
+}
+
+function openWithCode() {
+    window.ipcRenderer.send("open-with-code", currentFilePath);
+}
+
 
 document.getElementById("pathDisplay").innerText = currentFilePath;
 document.getElementById('openFileButton').addEventListener('click', openFile);
 document.getElementById('newFileButton').addEventListener('click', createNewFile);
 document.getElementById('saveFileButton').addEventListener('click', saveFile);
 document.getElementById('renameFileButton').addEventListener('click', renameFile);
+document.getElementById('increaseFontSizeButton').addEventListener('click', increaseTextSize);
+document.getElementById('decreaseFontSizeButton').addEventListener('click', decreaseTextSize);
+document.getElementById('openWithCode').addEventListener('click', openWithCode);
 
 window.addEventListener('resize', function () {
     editor.layout();
