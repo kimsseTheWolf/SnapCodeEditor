@@ -126,6 +126,63 @@ app.on('ready', () => {
         });
     })
 
+    // execute the code
+    ipcMain.on("execute-code", (event, lang, fileLoc) => {
+        const outputWindow = new BrowserWindow({
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                contextIsolation: false,
+            },
+            width: 1000,
+            height: 600,
+            autoHideMenuBar: true,
+            icon: path.join(__dirname, 'icon.ico')
+        });
+        outputWindow.loadFile('shellExecutor.html');
+        event.reply("executing-code");
+        let command = "";
+        if (lang === "python") {
+            command = `python "${fileLoc}"`;
+        }
+        else if (lang === "javascript") {
+            command = `node "${fileLoc}"`;
+        }
+        else if (lang === "cpp") {
+            command = `gcc "${fileLoc}" -o "${fileLoc}.exe" && "${fileLoc}.exe"`;
+        }
+        else if (lang === "java") {
+            command = `javac "${fileLoc}" && java "${fileLoc}"`;
+        }
+        else {
+            event.reply("code-executed", undefined);
+        }
+
+        const commandProcess = exec(command, (err, stdout, stderr) => {
+            if (err) {
+                console.log(err);
+                event.reply("code-executed", err);
+            }
+        });
+
+        commandProcess.stdout.on('data', (data) => {
+            console.log(data);
+            outputWindow.webContents.send("output", data.toString());
+        });
+
+        commandProcess.stderr.on('data', (data) => {
+            console.log(data);
+            outputWindow.webContents.send("output", data.toString());
+        });
+
+        commandProcess.on('close', (code) => {
+            event.reply("code-executed", code);
+        });
+
+        ipcMain.on("input", (event, data) => {
+            commandProcess.stdin.write(data + "\n");
+        });
+    });
+
 });
 
 app.on('window-all-closed', function () {

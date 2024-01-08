@@ -3,6 +3,7 @@ let editor;
 let currentFilePath;
 let client;
 let isSaved = false;
+let isExecutingCode = false;
 let currentTextSize = 16;
 
 const defaultTheme = {
@@ -408,6 +409,11 @@ require(['vs/editor/editor.main'], function() {
         document.getElementById("pathDisplay").innerText = fileName;
     });
 
+    window.ipcRenderer.on("code-executed", (event) => {
+        setExecutionStatus(false);
+        isExecutingCode = false;
+    });
+
     document.getElementById('textSize').textContent = currentTextSize;
 });
 
@@ -472,6 +478,23 @@ function openWithCode() {
     window.ipcRenderer.send("open-with-code", currentFilePath);
 }
 
+function setExecutionStatus(status) {
+    if (status) {
+        document.getElementById("footerMenu").style.backgroundColor = "dodgerblue";
+    }
+    else {
+        document.getElementById("footerMenu").style.backgroundColor = "rgba(0,0,0,0)";
+    }
+}
+
+function executeCode() {
+    if (currentFilePath !== undefined && !isExecutingCode) {
+        let selectedLang = document.getElementById("language").value;
+        window.ipcRenderer.send("execute-code", selectedLang, currentFilePath);
+        setExecutionStatus(true);
+    }
+}
+
 
 document.getElementById("pathDisplay").innerText = currentFilePath;
 document.getElementById('openFileButton').addEventListener('click', openFile);
@@ -481,6 +504,7 @@ document.getElementById('renameFileButton').addEventListener('click', renameFile
 document.getElementById('increaseFontSizeButton').addEventListener('click', increaseTextSize);
 document.getElementById('decreaseFontSizeButton').addEventListener('click', decreaseTextSize);
 document.getElementById('openWithCode').addEventListener('click', openWithCode);
+document.getElementById('execBtn').addEventListener('click', executeCode);
 
 window.addEventListener('resize', function () {
     editor.layout();
